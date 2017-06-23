@@ -1,19 +1,18 @@
 <import src="post-item/post-item-template.wxml"/>
-
 <view >
-  <swiper indicator-dots="true" autoplay="true" interval="5000">
+  <swiper catchtap="onSwiperTap" indicator-dots="true" autoplay="true" interval="5000">
     <swiper-item>
-      <image src="/images/meibisi-1.jpg"></image>
+      <image src="/images/meibisi-1.jpg" data-post-id="80"></image>
     </swiper-item>
     <swiper-item>
-      <image src="/images/meibisi-2.jpg"></image>
+      <image src="/images/meibisi-2.jpg" data-post-id="161"></image>
     </swiper-item>
     <swiper-item>
-      <image src="/images/meibisi-3.jpg"></image>
+      <image src="/images/meibisi-3.jpg" data-post-id="171"></image>
     </swiper-item>
   </swiper>
-
-  <block wx:for="{{posts_content}}" wx:key="postId" wx:for-item="item" wx:for-index="idx">
+  
+  <block wx:for="{{posts_content}}"  wx:for-item="item" wx:for-index="idx">
     <view bindtap="onPostTap" data-post-id="{{item.postId}}">
       <template is="postItem" data="{{...item}}"/>
     </view>

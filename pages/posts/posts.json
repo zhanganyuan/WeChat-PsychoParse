@@ -4,5 +4,5 @@
   "navigationBarTitleText": "我的文章",
   "backgroundColor": "#eeeeee",
   "backgroundTextStyle": "light",
-  "enablePullDownRefresh": false
+  "enablePullDownRefresh": true
 }

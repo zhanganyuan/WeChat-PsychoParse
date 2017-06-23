@@ -1,60 +1,54 @@
-var postsData = require("../../data/posts-data")
-
 Page({
-  /**
-   * 页面的初始数据
-   */
   data: {
   },
-
-  onPostTap: function(event) {
+  requestData: function (that) {
+    wx.request({
+      url: 'https://zay.red/psychoparse/',
+      method: 'POST',
+      header: {
+        'content-type': 'application/json'
+      },
+      data: {
+        id: null
+      },
+      success: function (res) {
+        var posts_content = res.data;
+        that.setData({ "posts_content": posts_content });
+        wx.setStorageSync("posts_content", posts_content);
+        var posts_index = {};
+        for (var i = 0; i < posts_content.length;i++){
+          posts_index[posts_content[i].postId] = i;
+        }
+        wx.setStorageSync("posts_index", posts_index);
+      }
+    })
+  },
+  onPostTap: function (event) {
     var postId = event.currentTarget.dataset.postId;
     wx.navigateTo({
       url: 'post-detail/post-detail?id=' + postId,
     })
   },
-
-  /**
-   * 生命周期函数--监听页面加载
-   */
   onLoad: function (options) {
-    var posts_content = postsData.postList
-    this.setData({ "posts_content": posts_content });
+    var that = this;
+    var posts_content = wx.getStorageSync("posts_content");
+    if (posts_content) {
+      that.setData({ "posts_content": posts_content });
+    } else {
+      that.requestData(that);
+    }
   },
-  
-  /**
- * 生命周期函数--监听页面初次渲染完成
- */
-  onReady: function () {
-
-  },
-
-  /**
-   * 生命周期函数--监听页面显示
-   */
-  onShow: function () {
-
-  },
-
-  /**
-   * 生命周期函数--监听页面隐藏
-   */
-  onHide: function () {
-
-  },
-
-  /**
-   * 生命周期函数--监听页面卸载
-   */
-  onUnload: function () {
-
-  },
-
   /**
    * 页面相关事件处理函数--监听用户下拉动作
    */
   onPullDownRefresh: function () {
-
+    this.requestData(this);
+  },
+  onSwiperTap: function (event) {
+    var postId = event.target.dataset.postId;
+    wx.navigateTo({
+      url: 'post-detail/post-detail?id=' + postId,
+    })
   },
 
   /**
@@ -63,7 +57,6 @@ Page({
   onReachBottom: function () {
 
   },
-
   /**
    * 用户点击右上角分享
    */

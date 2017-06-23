@@ -1,0 +1,8 @@
+<import src="post-item/post-item-template.wxml" />
+<view>
+  <swiper indicator-dots="true" autoplay="true" interval="5000">
+    <swiper-item wx:for="{{images}}" wx:for-index="idx">
+      <image src="{{'http://animates.zay.red/yourname-'+ (idx+1)+'.jpg'}}"></image>
+    </swiper-item>
+  </swiper>
+</view>

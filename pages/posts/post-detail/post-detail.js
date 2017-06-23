@@ -1,16 +1,34 @@
-var postsData = require("../../../data/posts-data.js")
+var app = getApp();
 
 Page({
-
-  /**
-   * 页面的初始数据
-   */
   data: {
     isPlayingMusic: false
+    // collected
+    // currentPostId
+    // isPlayingMusic
+    // postData
+  },
+  requestDataById(that) {
+    wx.request({
+      url: 'https://zay.red/psychoparse/' + postId,
+      method: 'POST',
+      header: {
+        'content-type': 'application/json'
+      },
+      data: {
+        id: postId
+      },
+      success: function (res) {
+        that.setData({
+          "currentPostId": postId,
+          "postData": res.data[0]
+        })
+      }
+    })
   },
   onCollectionTap: function (event) {
     var page = this;
-    var postsCollected = wx.getStorageSync('posts_collected');
+    var postsCollected = wx.getStorageSync('posts_collected') || [];
     var postId = page.data.currentPostId;
     var postCollected = !postsCollected[postId];
     postsCollected[postId] = postCollected;
@@ -47,82 +65,60 @@ Page({
       wx.pauseBackgroundAudio();
       this.setData({ isPlayingMusic: false })
     } else {
-      wx.playBackgroundAudio(postsData.postList[postId].music);
+      wx.playBackgroundAudio(this.data.postData.music);
       this.setData({ isPlayingMusic: true })
     }
   },
 
-  /**
-   * 生命周期函数--监听页面加载
-   */
+  setMusicMonitor: function () {
+    var page = this;
+    wx.onBackgroundAudioPlay(function () {
+      app.globalData.g_isPlayingMusic = true;
+      app.globalData.g_currentMusicPostId = page.data.currentPostId;
+      page.setData({
+        isPlayingMusic: true
+      })
+    });
+    wx.onBackgroundAudioPause(function () {
+      app.globalData.g_isPlayingMusic = true;
+      page.setData({
+        isPlayingMusic: false
+      })
+    });
+  },
   onLoad: function (options) {
     var page = this;
     var postId = options.id;
-    var postData = postsData.postList[postId];
-    page.setData({
-      "currentPostId": postId,
-      "postData": postData
-    });
+    var posts_index = wx.getStorageSync("posts_index");
+    var index = posts_index[postId];
+    if(index){
+      this.setData({
+        "postData": wx.getStorageSync("posts_content")[index],
+        "currentPostId": postId
+      })
+    }else{
+      this.requestDataById(this);
+    }
+
     var postsCollected = wx.getStorageSync("posts_collected") || [];
     if (postsCollected) {
       page.setData({ "collected": postsCollected[postId] });
     } else {
       wx.setStorageSync('posts_collected', { postId: false });
     };
-    wx.onBackgroundAudioPlay(function () {
-      page.setData({
+    if (app.globalData.g_isPlayingMusic && app.globalData.g_currentMusicPostId === postId) {
+      this.setData({
         isPlayingMusic: true
       })
-    });
-    wx.onBackgroundAudioPause(function() {
-      page.setData({
-        isPlayingMusic: false
-      })
-    })
+    }
+    this.setMusicMonitor();
   },
-
-  /**
-   * 生命周期函数--监听页面初次渲染完成
-   */
-  onReady: function () {
-
-  },
-
-  /**
-   * 生命周期函数--监听页面显示
-   */
-  onShow: function () {
-
-  },
-
-  /**
-   * 生命周期函数--监听页面隐藏
-   */
-  onHide: function () {
-
-  },
-
-  /**
-   * 生命周期函数--监听页面卸载
-   */
-  onUnload: function () {
-
-  },
-
-  /**
-   * 页面相关事件处理函数--监听用户下拉动作
-   */
-  onPullDownRefresh: function () {
-
-  },
-
   /**
    * 页面上拉触底事件的处理函数
    */
   onReachBottom: function () {
 
   },
-
   /**
    * 用户点击右上角分享
    */

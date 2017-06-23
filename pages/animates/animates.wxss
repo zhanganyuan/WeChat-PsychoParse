@@ -1,0 +1,11 @@
+swiper{
+  width:750rpx;
+  height: 1334rpx;
+}
+
+swiper image{
+  width: 750rpx;
+  height: 1334rpx;
+}
+
+

@@ -1,0 +1,6 @@
+<view class="classname">
+<button>获取运动数据</button>
+<scroll-view>
+<text>{{}}</text>
+</scroll-view>
+</view>
